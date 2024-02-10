@@ -1,4 +1,4 @@
-from uuid_extensions import uuid7, uuid7str
+import uuid
 from flask import render_template, request, redirect, url_for, Blueprint, current_app
 import datetime
 
@@ -23,7 +23,7 @@ def home():
     habits_on_date = current_app.db.habits.find({"added": {"$lte": selected_date}})
 
     completions = [
-        habit["habit"] for habit in current_app.db.completions.find({"date": selected_date})
+        habit["habit"] for habit in current_app.db.completions.find({"date": {"$lte": selected_date}})
     ]    
 
     return render_template(
@@ -44,7 +44,7 @@ def add_habit():
         
     if request.method=="POST":
         current_app.db.habits.insert_one({
-            "_id": uuid7(as_type='hex'), "added": selected_date, "name": request.form.get("habit")
+            "_id": uuid.uuid4().hex, "added": selected_date, "name": request.form.get("habit")
         })
     return render_template("add_habit.html", title="Habit tracker - Add Habit", selected_date=selected_date)
 
