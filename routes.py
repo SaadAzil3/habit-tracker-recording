@@ -22,9 +22,17 @@ def home():
 
     habits_on_date = current_app.db.habits.find({"added": {"$lte": selected_date}})
 
-    completions = [
-        habit["habit"] for habit in current_app.db.completions.find({"date": {"$lte": selected_date}})
-    ]    
+    formatted_date = selected_date.strftime("%Y-%m-%d")
+
+    if formatted_date==datetime.datetime.today().strftime("%Y-%m-%d"):
+        completions = [
+            habit["habit"] for habit in current_app.db.completions.find({"date": {"$lte": selected_date}})
+        ]
+    else:
+        completions = [
+            habit["habit"] for habit in current_app.db.completions.find({"date": selected_date})
+        ]
+    
 
     return render_template(
         "home.html", 
